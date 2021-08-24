@@ -179,7 +179,7 @@ public class SwerveModule {
         SmartDashboard.putNumber("FR Turn Output", turnOutput);
         SmartDashboard.putNumber("FR Feed Forward", turnFeedforward);
     }
-    else if (m_driveMotor.getDeviceID() == 5) {
+    else if (m_driveMotor.getDeviceID() == 8) {
         // Rear Left
         SmartDashboard.putNumber("RL Drive Output", driveOutput);
         SmartDashboard.putNumber("RL Encoder", m_turningMotor.getSelectedSensorPosition(0));
@@ -189,7 +189,7 @@ public class SwerveModule {
         SmartDashboard.putNumber("RL Turn Output", turnOutput);
         SmartDashboard.putNumber("RL Feed Forward", turnFeedforward);
     }
-    else if (m_driveMotor.getDeviceID() == 7) {
+    else if (m_driveMotor.getDeviceID() == 5) {
         // Rear Right
         SmartDashboard.putNumber("RR Drive Output", driveOutput);
         SmartDashboard.putNumber("RR Encoder", m_turningMotor.getSelectedSensorPosition(0));
