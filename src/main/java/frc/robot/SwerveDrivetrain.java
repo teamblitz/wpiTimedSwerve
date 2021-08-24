@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 /** Represents a swerve drive style drivetrain. */
 public class SwerveDrivetrain {
   public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+  public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
 
   private final Translation2d m_frontLeftLocation = new Translation2d(0.3175, 0.27305);
   private final Translation2d m_frontRightLocation = new Translation2d(0.3175, -0.27305);
@@ -26,10 +26,10 @@ public class SwerveDrivetrain {
   // private final SwerveModule m_frontRight = new SwerveModule(3, 4, 4, 5, 6, 7);
   // private final SwerveModule m_backLeft = new SwerveModule(5, 6, 8, 9, 10, 11);
   // private final SwerveModule m_backRight = new SwerveModule(7, 8, 12, 13, 14, 15);
-  private final SwerveModule m_frontLeft = new SwerveModule(1, 2);  // drive, turning
-  private final SwerveModule m_frontRight = new SwerveModule(3, 4);
-  private final SwerveModule m_backLeft = new SwerveModule(5, 6);
-  private final SwerveModule m_backRight = new SwerveModule(7, 8);
+  private final SwerveModule m_frontLeft = new SwerveModule(1, 2, "FrontLeft");  // drive, turning
+  private final SwerveModule m_frontRight = new SwerveModule(3, 4, "FrontRight");
+  private final SwerveModule m_backLeft = new SwerveModule(8, 7, "BackLeft");
+  private final SwerveModule m_backRight = new SwerveModule(6, 5, "BackRight");
 
   // private final AnalogGyro m_gyro = new AnalogGyro(0);
 
@@ -69,6 +69,21 @@ public class SwerveDrivetrain {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void SetAllWheelOffsets () {
+    m_frontLeft.SetWheelOffset();
+    m_frontRight.SetWheelOffset();
+    m_backLeft.SetWheelOffset();
+    m_backRight.SetWheelOffset();
+    System.out.println("SetWheelOffsets Drivetrain");
+  }
+
+  public void ShowDashboardData () {
+    m_frontLeft.displayDashboard();
+    m_frontRight.displayDashboard();
+    m_backLeft.displayDashboard();
+    m_backRight.displayDashboard();
   }
 
   // JWG not dealing with feild centric for now

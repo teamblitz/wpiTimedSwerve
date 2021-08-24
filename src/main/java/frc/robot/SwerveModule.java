@@ -4,25 +4,32 @@
 
 package frc.robot;  
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 // JWG add Talon libraries
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 // JWG
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 // import edu.wpi.first.wpilibj.Encoder;
 // import edu.wpi.first.wpilibj.PWMSparkMax;
-// import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.controller.PIDController;
+// import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
-// import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
+// import edu.wpi.first.wpilibj.;
 public class SwerveModule {
   // JWG don't need, no drive motor encoder
   // private static final double kWheelRadius = 0.0508;
   private static final int kEncoderResolution = 4096;
+
+  private double m_offset = 0;
+  String m_prefsName;
 
   //JWG talon SRX raw encoder position needs to be converted to radians for Rotation2d
   private static final double kTicksPerDegree = kEncoderResolution / 360;
@@ -32,7 +39,7 @@ public class SwerveModule {
 
   // private final MotorController m_driveMotor;
   // private final MotorController m_turningMotor;
-  private WPI_TalonSRX m_driveMotor;
+  private SpeedController m_driveMotor;
   private WPI_TalonSRX m_turningMotor;
 
   // private final Encoder m_driveEncoder;
@@ -43,19 +50,16 @@ public class SwerveModule {
   // private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final ProfiledPIDController m_turningPIDController =
-      new ProfiledPIDController(
-          1,
-          0,
-          0,
-          new TrapezoidProfile.Constraints(
-              kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+  private final PIDController m_turningPIDController =
+      new PIDController(10,0,0); // Proportional for voltage value, steering twitchyness
+          //new TrapezoidProfile.Constraints(
+          //    kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
   // Gains are for example purposes only - must be determined for your own robot!
   // JWG Parameters are from example representing ks - static gain and vs - velocity gain
   // JWG feedforward outputs for a simple permanent-magnet DC motor
   // private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 3);
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+  // private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
 
   /**
    * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
@@ -70,17 +74,30 @@ public class SwerveModule {
   // JWG dont have encoder channels, using TalonSRX sensor feedback from analog 5v encoder
   public SwerveModule(
       int driveMotorChannel,
-      int turningMotorChannel)
+      int turningMotorChannel,
+      String prefsName)
       // int driveEncoderChannelA,
       // int driveEncoderChannelB,
       // int turningEncoderChannelA,
       // int turningEncoderChannelB) 
       {
     
+        m_prefsName = prefsName;
+
     // m_driveMotor = new PWMSparkMax(driveMotorChannel);
     // m_turningMotor = new PWMSparkMax(turningMotorChannel);
-    m_driveMotor = new WPI_TalonSRX(driveMotorChannel);
+    if(driveMotorChannel==6)
+      m_driveMotor = new WPI_VictorSPX(driveMotorChannel);
+    else
+      m_driveMotor = new WPI_TalonSRX(driveMotorChannel);
     m_turningMotor = new WPI_TalonSRX(turningMotorChannel);
+    m_turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
+    m_turningMotor.configFeedbackNotContinuous(true, 10);
+
+
+    LoadWheelOffset();
+
+    // could have brake mode set here
 
     // m_driveEncoder = new Encoder(driveEncoderChannelA, driveEncoderChannelB);
     // m_turningEncoder = new Encoder(turningEncoderChannelA, turningEncoderChannelB);
@@ -98,6 +115,21 @@ public class SwerveModule {
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+  }
+
+  public void LoadWheelOffset () {
+    Preferences prefs = Preferences.getInstance();
+    m_offset = prefs.getDouble(m_prefsName, 0);
+
+  }
+
+  public void SetWheelOffset () {
+
+    Preferences prefs = Preferences.getInstance();
+    double steerPosition = m_turningMotor.getSelectedSensorPosition(0);
+    prefs.putDouble(m_prefsName, steerPosition);
+    m_offset = steerPosition;
+
   }
 
   /**
@@ -128,7 +160,7 @@ public class SwerveModule {
 
     // JWG Rotation2d expecting radians, what is getSelectedSensorPosition returning
     // JWG reading encoder through TalonSRX trying getSelectedSensorPosition(0), where 0 is primary closed loop        
-    double degrees = m_turningMotor.getSelectedSensorPosition(0) / kTicksPerDegree;
+    double degrees = (m_turningMotor.getSelectedSensorPosition(0) - m_offset)/ kTicksPerDegree;
     double radians = java.lang.Math.toRadians(degrees);
     SwerveModuleState state =
         // SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.get()));
@@ -140,7 +172,7 @@ public class SwerveModule {
     // m_drivePIDController.calculate(m_driveEncoder.getRate(), state.speedMetersPerSecond);
     // JWG dont have drive encoder for PID, convert state.speed to voltage to use    
     // JWG is this speed already normalized for kMaxSpeed ?
-        state.speedMetersPerSecond ;
+        state.speedMetersPerSecond;
 
     // final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
@@ -148,60 +180,48 @@ public class SwerveModule {
     final double turnOutput =
      // JWG reading encoder through TalonSRX trying getSelectedSensorPosition(0), where 0 is primary closed loop 
      // m_turningPIDController.calculate(m_turningEncoder.get(), state.angle.getRadians());
-        m_turningPIDController.calculate(m_turningMotor.getSelectedSensorPosition(0), state.angle.getRadians());
+        m_turningPIDController.calculate(radians, state.angle.getRadians());
 
-    final double turnFeedforward =
-        m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+    // final double turnFeedforward =
+    //    m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
     // JWG without drive encoder, just use state.speed converted to voltage
     // m_driveMotor.setVoltage(driveOutput + driveFeedforward);
-    m_driveMotor.setVoltage(driveOutput);
-    m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+    m_driveMotor.setVoltage(driveOutput * 4.0 );
+    // m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+    m_turningMotor.setVoltage(turnOutput);
 
-    //OUTPUT
-    if (m_driveMotor.getDeviceID() == 1) {
-        // Front Left
-        SmartDashboard.putNumber("FL Drive Output", driveOutput);
-        SmartDashboard.putNumber("FL Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("FL Current Degrees", degrees);
-        SmartDashboard.putNumber("FL Current Radians", radians);
-        SmartDashboard.putNumber("FL State Angle Radians", state.angle.getRadians());
-        SmartDashboard.putNumber("FL Turn Output", turnOutput);
-        SmartDashboard.putNumber("FL Feed Forward", turnFeedforward);
-    }
-    else if (m_driveMotor.getDeviceID() == 3) {
+    
+
+  }
+
+  public void displayDashboard() {
+  // OUTPUT
+    if (m_turningMotor.getDeviceID() == 2) {
+         // Front Left
+         SmartDashboard.putNumber("FL Encoder", m_turningMotor.getSelectedSensorPosition(0));
+         SmartDashboard.putNumber("FL Wheel Offset", m_offset);
+     }
+    else if (m_turningMotor.getDeviceID() == 4) {
         // Front Right
-        SmartDashboard.putNumber("FR Drive Output", driveOutput);
         SmartDashboard.putNumber("FR Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("FR Current Degrees", degrees);
-        SmartDashboard.putNumber("FR Current Radians", radians);
-        SmartDashboard.putNumber("FR State Angle Radians", state.angle.getRadians());
-        SmartDashboard.putNumber("FR Turn Output", turnOutput);
-        SmartDashboard.putNumber("FR Feed Forward", turnFeedforward);
+        SmartDashboard.putNumber("FR Wheel Offset", m_offset);
+    
     }
-    else if (m_driveMotor.getDeviceID() == 5) {
+    else if (m_turningMotor.getDeviceID() == 7) {
         // Rear Left
-        SmartDashboard.putNumber("RL Drive Output", driveOutput);
         SmartDashboard.putNumber("RL Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("RL Current Degrees", degrees);
-        SmartDashboard.putNumber("RL Current Radians", radians);
-        SmartDashboard.putNumber("RL State Angle Radians", state.angle.getRadians());
-        SmartDashboard.putNumber("RL Turn Output", turnOutput);
-        SmartDashboard.putNumber("RL Feed Forward", turnFeedforward);
+        SmartDashboard.putNumber("RL Wheel Offset", m_offset);
     }
-    else if (m_driveMotor.getDeviceID() == 7) {
-        // Rear Right
-        SmartDashboard.putNumber("RR Drive Output", driveOutput);
-        SmartDashboard.putNumber("RR Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("RR Current Degrees", degrees);
-        SmartDashboard.putNumber("RR Current Radians", radians);
-        SmartDashboard.putNumber("RR State Angle Radians", state.angle.getRadians());
-        SmartDashboard.putNumber("RR Turn Output", turnOutput);
-        SmartDashboard.putNumber("RR Feed Forward", turnFeedforward);
-    }
+    else if (m_turningMotor.getDeviceID() == 5) {
+         // Rear Right
+         SmartDashboard.putNumber("RR Encoder", m_turningMotor.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("RR Wheel Offset", m_offset);
+     }
     else
         System.out.println("Smartdashboard miss on motorcontroller");
 
 
   }
+
 }
