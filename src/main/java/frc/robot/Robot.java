@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Commands.SetWheelOffsets;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -48,12 +47,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     driveWithJoystick(false);
-    // m_swerve.updateOdometry();
   }
 
   @Override
   public void teleopPeriodic() {
-    driveWithJoystick(true);
+    driveWithJoystick(false);
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
@@ -67,20 +65,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left X", m_controller.getX(GenericHID.Hand.kLeft));
     SmartDashboard.putNumber("Right X", m_controller.getX(GenericHID.Hand.kRight));
 
-    if (Math.abs(m_controller.getY(GenericHID.Hand.kLeft)) < .15) 
-      yLeft = 0.0;
-    else 
-      yLeft = m_controller.getY(GenericHID.Hand.kLeft);
-    
-    if (Math.abs(m_controller.getX(GenericHID.Hand.kLeft)) < .15) 
-      xLeft = 0.0;
-    else 
-      xLeft = m_controller.getX(GenericHID.Hand.kLeft);
-
-    if (Math.abs(m_controller.getX(GenericHID.Hand.kRight)) < .15) 
-      xRight = 0.0;
-    else 
-      xRight = m_controller.getX(GenericHID.Hand.kRight) * .2;  // slow the tornado spin
+    if (Math.abs(m_controller.getY(GenericHID.Hand.kLeft)) < .15) yLeft = 0.0;   else yLeft = m_controller.getY(GenericHID.Hand.kLeft);
+    if (Math.abs(m_controller.getX(GenericHID.Hand.kLeft)) < .15) xLeft = 0.0;   else xLeft = m_controller.getX(GenericHID.Hand.kLeft);
+    if (Math.abs(m_controller.getX(GenericHID.Hand.kRight)) < .15) xRight = 0.0; else xRight = m_controller.getX(GenericHID.Hand.kRight) * .2;  // slow the tornado spin
 
     final var xSpeed = -m_xspeedLimiter.calculate(yLeft) * SwerveDrivetrain.kMaxSpeed;
 

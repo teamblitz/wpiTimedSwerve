@@ -4,11 +4,6 @@
 
 package frc.robot; 
 
-// import edu.wpi.first.wpilibj.geometry.Rotation2d;
-// import edu.wpi.first.wpilibj.AnalogGyro;
-// import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
-// import edu.wpi.first.wpilibj.interfaces.Gyro;
-// import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
@@ -25,10 +20,6 @@ public class SwerveDrivetrain {
   private final Translation2d m_backLeftLocation = new Translation2d(-0.3175, 0.27305);
   private final Translation2d m_backRightLocation = new Translation2d(-0.3175, -0.27305);
 
-  // private final SwerveModule m_frontLeft = new SwerveModule(1, 2, 0, 1, 2, 3);
-  // private final SwerveModule m_frontRight = new SwerveModule(3, 4, 4, 5, 6, 7);
-  // private final SwerveModule m_backLeft = new SwerveModule(5, 6, 8, 9, 10, 11);
-  // private final SwerveModule m_backRight = new SwerveModule(7, 8, 12, 13, 14, 15);
   private final SwerveModule m_frontLeft = new SwerveModule(1, 2, "FrontLeft");  // drive, turning
   private final SwerveModule m_frontRight = new SwerveModule(3, 4, "FrontRight");
   private final SwerveModule m_backLeft = new SwerveModule(8, 7, "BackLeft");
@@ -40,15 +31,9 @@ public class SwerveDrivetrain {
       new SwerveDriveKinematics(
           m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-// JWG not dealing with feild centric for now, dont need gyro           
-//  private final SwerveDriveOdometry m_odometry =
-//      // new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
-//      new SwerveDriveOdometry(m_kinematics, getGyro());
-
   public SwerveDrivetrain() {
       m_gyro.reset();
   }
-
 
   /**
    * Method to drive the robot using joystick info.
@@ -60,10 +45,8 @@ public class SwerveDrivetrain {
    */
   @SuppressWarnings("ParameterName")
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-  // public void drive(double xSpeed, double ySpeed, double rot) {
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
-  //          new ChassisSpeeds(xSpeed, ySpeed, rot));
             fieldRelative
                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
@@ -79,24 +62,14 @@ public class SwerveDrivetrain {
     m_frontRight.SetWheelOffset();
     m_backLeft.SetWheelOffset();
     m_backRight.SetWheelOffset();
-    System.out.println("SetWheelOffsets Drivetrain");
+    // System.out.println("SetWheelOffsets Drivetrain");
   }
 
   public void ShowDashboardData () {
-    m_frontLeft.displayDashboard();
-    m_frontRight.displayDashboard();
-    m_backLeft.displayDashboard();
-    m_backRight.displayDashboard();
+    m_frontLeft.displayDashboard(m_gyro);
+    m_frontRight.displayDashboard(m_gyro);
+    m_backLeft.displayDashboard(m_gyro);
+    m_backRight.displayDashboard(m_gyro);
   }
 
-  // JWG not dealing with feild centric for now
-  /** Updates the field relative position of the robot. */
- // public void updateOdometry() {
- //   m_odometry.update(
- //       getGyro(),
- //       m_frontLeft.getState(),
- //       m_frontRight.getState(),
- //       m_backLeft.getState(),
- //      m_backRight.getState());
- // }
 }
