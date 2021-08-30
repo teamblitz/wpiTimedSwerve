@@ -3,12 +3,12 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.SwerveDrivetrain;
 
-// Command for button on dashboard to reset the wheel offsets
-public class SetWheelOffsets extends CommandBase {        
-        
+// Command for button on dashboard to reset the gyro yaw
+public class ResetGyro extends CommandBase {        
+                
         private final SwerveDrivetrain m_swerve;
 
-        public SetWheelOffsets(SwerveDrivetrain subsystem) {
+        public ResetGyro(SwerveDrivetrain subsystem) {
             m_swerve = subsystem;            
             // addRequirements(m_swerve);
         }
@@ -20,8 +20,7 @@ public class SetWheelOffsets extends CommandBase {
 
         @Override
         public void initialize() {
-            m_swerve.SetAllWheelOffsets();
-            // System.out.println("SetWheelOffsets Command");
+            m_swerve.ResetGyro();        
         }        
 
         @Override

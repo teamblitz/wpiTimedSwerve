@@ -4,26 +4,27 @@
 
 package frc.robot; 
 
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import com.kauailabs.navx.frc.AHRS;
 
-/** Represents a swerve drive style drivetrain. */
+// Represents a swerve drive style drivetrain
 public class SwerveDrivetrain {
-  public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
+  // public static final double kMaxSpeed = 3.0; // 3 meters per second
+  // public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
 
   private final Translation2d m_frontLeftLocation = new Translation2d(0.3175, 0.27305);
   private final Translation2d m_frontRightLocation = new Translation2d(0.3175, -0.27305);
   private final Translation2d m_backLeftLocation = new Translation2d(-0.3175, 0.27305);
   private final Translation2d m_backRightLocation = new Translation2d(-0.3175, -0.27305);
 
-  private final SwerveModule m_frontLeft = new SwerveModule(1, 2, "FrontLeft");  // drive, turning
-  private final SwerveModule m_frontRight = new SwerveModule(3, 4, "FrontRight");
-  private final SwerveModule m_backLeft = new SwerveModule(8, 7, "BackLeft");
-  private final SwerveModule m_backRight = new SwerveModule(6, 5, "BackRight");
+  private final SwerveModule m_frontLeft = new SwerveModule(Constants.kFrontLeftDrive, Constants.kFrontLeftTurning, "FrontLeft");  // drive, turning, prefs name
+  private final SwerveModule m_frontRight = new SwerveModule(Constants.kFrontRightDrive, Constants.kFrontRightTurning, "FrontRight");
+  private final SwerveModule m_backLeft = new SwerveModule(Constants.kRearLeftDrive, Constants.kRearLeftTurning, "BackLeft");
+  private final SwerveModule m_backRight = new SwerveModule(Constants.kRearRightDrive, Constants.kRearRightTurning, "BackRight");
 
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
@@ -32,6 +33,7 @@ public class SwerveDrivetrain {
           m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
   public SwerveDrivetrain() {
+      // Reset gyro when drivetrain is initialized
       m_gyro.reset();
   }
 
@@ -50,7 +52,7 @@ public class SwerveDrivetrain {
             fieldRelative
                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, Constants.kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
@@ -70,6 +72,10 @@ public class SwerveDrivetrain {
     m_frontRight.displayDashboard(m_gyro);
     m_backLeft.displayDashboard(m_gyro);
     m_backRight.displayDashboard(m_gyro);
+  }
+
+  public void ResetGyro () {
+    m_gyro.reset();
   }
 
 }

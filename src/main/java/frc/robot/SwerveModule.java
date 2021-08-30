@@ -4,11 +4,11 @@
 
 package frc.robot;  
 
+import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
@@ -16,15 +16,15 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-// import edu.wpi.first.wpilibj.;
+
 public class SwerveModule {
 
-  private static final int kEncoderResolution = 4096;
+  // private static final int kEncoderResolution = 4096;
   private double m_offset = 0;
   String m_prefsName;
 
   //JWG talon SRX raw encoder position needs to be converted to radians for Rotation2d
-  private static final double kTicksPerDegree = kEncoderResolution / 360;
+  // private static final double kTicksPerDegree = kEncoderResolution / 360;
   private SpeedController m_driveMotor;
   private WPI_TalonSRX m_turningMotor;
 
@@ -47,7 +47,7 @@ public class SwerveModule {
     
     m_prefsName = prefsName;
 
-    if(driveMotorChannel==6)
+    if(driveMotorChannel == Constants.kRearRightDrive)
       m_driveMotor = new WPI_VictorSPX(driveMotorChannel);
     else
       m_driveMotor = new WPI_TalonSRX(driveMotorChannel);
@@ -83,7 +83,7 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     // reading encoder through TalonSRX trying getSelectedSensorPosition(0), where 0 is primary closed loop        
-    double degrees = (m_turningMotor.getSelectedSensorPosition(0) - m_offset)/ kTicksPerDegree;
+    double degrees = (m_turningMotor.getSelectedSensorPosition(0) - m_offset)/ Constants.kTicksPerDegree;
     double radians = java.lang.Math.toRadians(degrees);
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(radians));
     
@@ -93,8 +93,8 @@ public class SwerveModule {
     // Calculate the turning motor output from the turning PID controller.
     final double turnOutput = m_turningPIDController.calculate(radians, state.angle.getRadians());
 
-    // JWG without drive encoder, just use state.speed converted to voltage
-    m_driveMotor.setVoltage(driveOutput * 4.0 );
+    // JWG without drive encoder, using state.speed with multiplier to convert to voltage
+    m_driveMotor.setVoltage(driveOutput * Constants.kDriveSpeedVoltageModifier );
     m_turningMotor.setVoltage(turnOutput);    
 
   }
@@ -104,23 +104,23 @@ public class SwerveModule {
   // OUTPUT
     SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
 
-    if (m_turningMotor.getDeviceID() == 2) {
+    if (m_turningMotor.getDeviceID() == Constants.kFrontLeftTurning) {
          // Front Left
          SmartDashboard.putNumber("FL Encoder", m_turningMotor.getSelectedSensorPosition(0));
          SmartDashboard.putNumber("FL Wheel Offset", m_offset);
      }
-    else if (m_turningMotor.getDeviceID() == 4) {
+    else if (m_turningMotor.getDeviceID() == Constants.kFrontRightTurning) {
         // Front Right
         SmartDashboard.putNumber("FR Encoder", m_turningMotor.getSelectedSensorPosition(0));
         SmartDashboard.putNumber("FR Wheel Offset", m_offset);
     
     }
-    else if (m_turningMotor.getDeviceID() == 7) {
+    else if (m_turningMotor.getDeviceID() == Constants.kRearLeftTurning) {
         // Rear Left
         SmartDashboard.putNumber("RL Encoder", m_turningMotor.getSelectedSensorPosition(0));
         SmartDashboard.putNumber("RL Wheel Offset", m_offset);
     }
-    else if (m_turningMotor.getDeviceID() == 5) {
+    else if (m_turningMotor.getDeviceID() == Constants.kRearRightTurning) {
          // Rear Right
          SmartDashboard.putNumber("RR Encoder", m_turningMotor.getSelectedSensorPosition(0));
         SmartDashboard.putNumber("RR Wheel Offset", m_offset);
