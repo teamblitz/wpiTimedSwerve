@@ -3,8 +3,8 @@ package frc.robot;
 public class Constants {
 
     // Field Centric Control
-    public static final boolean kAutoFieldCentric = false;
-    public static final boolean kTeleFieldCentric = false;
+    public static boolean kAutoFieldCentric = false;
+    public static boolean kTeleFieldCentric = false;
 
     // steering module encoder
     public static final int kEncoderResolution = 4096;
@@ -34,7 +34,7 @@ public class Constants {
     public static final double kDeadband = 0.15;
 
     //Tornado spin limiter
-    public static final double kSpinLimiter = 0.2;
+    public static final double kSpinLimiter = 0.5;
 
     //Slew rate limiter, Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1
     public static final double kSlewRateLimiter = 3.0;
