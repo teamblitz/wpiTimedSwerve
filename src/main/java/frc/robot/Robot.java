@@ -2,12 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// package edu.wpi.first.wpilibj.examples.swervebot;
+// package frc.robot;
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -62,16 +62,16 @@ public class Robot extends TimedRobot {
     double xLeft;
     double xRight;
 
-    SmartDashboard.putNumber("Left Y", m_controller.getY(GenericHID.Hand.kLeft));
-    SmartDashboard.putNumber("Left X", m_controller.getX(GenericHID.Hand.kLeft));
-    SmartDashboard.putNumber("Right X", m_controller.getX(GenericHID.Hand.kRight));
+    SmartDashboard.putNumber("Left Y", m_controller.getLeftY());
+    SmartDashboard.putNumber("Left X", m_controller.getLeftX());
+    SmartDashboard.putNumber("Right X", m_controller.getRightX());
 
-    if (Math.abs(m_controller.getY(GenericHID.Hand.kLeft)) < Constants.kDeadband) yLeft = 0.0;   else yLeft = m_controller.getY(GenericHID.Hand.kLeft);
-    if (Math.abs(m_controller.getX(GenericHID.Hand.kLeft)) < Constants.kDeadband) xLeft = 0.0;   else xLeft = m_controller.getX(GenericHID.Hand.kLeft);
+    if (Math.abs(m_controller.getLeftY()) < Constants.kDeadband) yLeft = 0.0;   else yLeft = m_controller.getLeftY();
+    if (Math.abs(m_controller.getLeftX()) < Constants.kDeadband) xLeft = 0.0;   else xLeft = m_controller.getLeftX();
     
-    if (Math.abs(m_controller.getX(GenericHID.Hand.kRight)) < Constants.kDeadband) xRight = 0.0; 
+    if (Math.abs(m_controller.getRightX()) < Constants.kDeadband) xRight = 0.0; 
     else 
-      xRight = m_controller.getX(GenericHID.Hand.kRight) * Constants.kSpinLimiter;  // slow the tornado spin
+      xRight = m_controller.getRightX() * Constants.kSpinLimiter;  // slow the tornado spin
 
     final var xSpeed = -m_xspeedLimiter.calculate(yLeft) * Constants.kMaxSpeed;
 
