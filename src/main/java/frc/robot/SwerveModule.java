@@ -4,7 +4,7 @@
 
 package frc.robot;  
 
-import frc.robot.Constants;
+//import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -13,7 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -25,7 +25,7 @@ public class SwerveModule {
 
   //JWG talon SRX raw encoder position needs to be converted to radians for Rotation2d
   // private static final double kTicksPerDegree = kEncoderResolution / 360;
-  private SpeedController m_driveMotor;
+  private MotorController m_driveMotor;
   private WPI_TalonSRX m_turningMotor;
 
   // Gains are for example purposes only - must be determined for your own robot!
@@ -64,14 +64,12 @@ public class SwerveModule {
   }
 
   public void LoadWheelOffset () {
-    Preferences prefs = Preferences.getInstance();
-    m_offset = prefs.getDouble(m_prefsName, 0);
+    m_offset = Preferences.getDouble(m_prefsName, 0);
   }
 
   public void SetWheelOffset () {
-    Preferences prefs = Preferences.getInstance();
     double steerPosition = m_turningMotor.getSelectedSensorPosition(0);
-    prefs.putDouble(m_prefsName, steerPosition);
+   Preferences.setDouble(m_prefsName, steerPosition);
     m_offset = steerPosition;
   }
 

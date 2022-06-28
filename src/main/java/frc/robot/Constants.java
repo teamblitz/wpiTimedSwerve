@@ -27,8 +27,12 @@ public class Constants {
     public static final double kDriveSpeedVoltageModifier = 4.0;
 
     // Speed Controls
-    public static final double kMaxSpeed = 3.0; // 3 meters per second
-    public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
+    public static final double kMaxSpeed = 1.5; // 3 meters per second
+    public static final double kMaxAngularSpeed = 2 * Math.PI; // Control speed of rotation
+
+    // public static final double kMaxSpeed = 3.0; // 3 meters per second
+    // public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
+
 
     //Deadband for crappy joystick
     public static final double kDeadband = 0.15;
