@@ -2,10 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot; 
+package frc.robot.subsystems.drive; 
 
 //import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -14,7 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import com.kauailabs.navx.frc.AHRS;
 
 // Represents a swerve drive style drivetrain
-public class SwerveDrivetrain {
+public class SwerveDrivetrain extends SubsystemBase {
   // public static final double kMaxSpeed = 3.0; // 3 meters per second
   // public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
 
@@ -47,7 +49,6 @@ public class SwerveDrivetrain {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  @SuppressWarnings("ParameterName")
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     SwerveModuleState[] swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
@@ -69,14 +70,14 @@ public class SwerveDrivetrain {
     // System.out.println("SetWheelOffsets Drivetrain");
   }
 
-  public void ShowDashboardData () {
+  public void showDashboardData () {
     m_frontLeft.displayDashboard(m_gyro);
     m_frontRight.displayDashboard(m_gyro);
     m_backLeft.displayDashboard(m_gyro);
     m_backRight.displayDashboard(m_gyro);
   }
 
-  public void ResetGyro () {
+  public void resetGyro () {
     m_gyro.reset();
   }
 

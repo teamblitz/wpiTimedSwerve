@@ -1,7 +1,7 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.SwerveDrivetrain;
+import frc.robot.subsystems.drive.SwerveDrivetrain;
 
 // Command for button on dashboard to reset the wheel offsets
 public class SetWheelOffsets extends CommandBase {        

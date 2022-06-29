@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;  
+package frc.robot.subsystems.drive;  
 
 //import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -15,8 +15,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
-
+/** Not a subsystem, but a dependancy of a subsystem */
 public class SwerveModule {
 
   // private static final int kEncoderResolution = 4096;

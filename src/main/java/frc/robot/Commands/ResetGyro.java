@@ -1,7 +1,7 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.SwerveDrivetrain;
+import frc.robot.subsystems.drive.SwerveDrivetrain;
 
 // Command for button on dashboard to reset the gyro yaw
 public class ResetGyro extends CommandBase {        
@@ -20,7 +20,7 @@ public class ResetGyro extends CommandBase {
 
         @Override
         public void initialize() {
-            m_swerve.ResetGyro();        
+            m_swerve.resetGyro();        
         }        
 
         @Override

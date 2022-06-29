@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Commands.ResetGyro;
-import frc.robot.Commands.SetWheelOffsets;
+import frc.robot.commands.ResetGyro;
+import frc.robot.commands.SetWheelOffsets;
+import frc.robot.subsystems.drive.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
   private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
 
+  
   @Override
   public void robotInit() {
     super.robotInit();
@@ -39,7 +41,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     if (RobotController.getUserButton() == true)
       m_swerve.SetAllWheelOffsets();
-    m_swerve.ShowDashboardData();
+    m_swerve.showDashboardData();
 
     CommandScheduler.getInstance().run();
   }
