@@ -7,6 +7,7 @@ package frc.robot;
 
 //import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -26,7 +27,7 @@ public class Robot extends TimedRobot {
   private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
 
-  
+  private RobotContainer m_robotContainer;
   @Override
   public void robotInit() {
     super.robotInit();
@@ -35,6 +36,8 @@ public class Robot extends TimedRobot {
     //Buttons on dashboard for commands
     SmartDashboard.putData("SetWheelOffsets", new SetWheelOffsets(m_swerve));
     SmartDashboard.putData("Reset Gyro", new ResetGyro(m_swerve));
+    
+    m_robotContainer = new RobotContainer();
   }
 
   @Override
@@ -67,6 +70,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Y", m_controller.getLeftY());
     SmartDashboard.putNumber("Left X", m_controller.getLeftX());
     SmartDashboard.putNumber("Right X", m_controller.getRightX());
+
 
     if (Math.abs(m_controller.getLeftY()) < Constants.kDeadband) yLeft = 0.0;   else yLeft = m_controller.getLeftY();
     if (Math.abs(m_controller.getLeftX()) < Constants.kDeadband) xLeft = 0.0;   else xLeft = m_controller.getLeftX();

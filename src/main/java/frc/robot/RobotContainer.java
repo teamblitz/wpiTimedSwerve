@@ -11,12 +11,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.drive.SwerveDrivetrain;
 
 
 /**
@@ -27,15 +30,34 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 */
 public class RobotContainer {
 
+    private final XboxController m_controller = new XboxController(0);
+    private final SwerveDrivetrain m_drive = new SwerveDrivetrain();
+
     public RobotContainer() {
         configureSubsystems();
         configureButtonBindings();
         setDefaultCommands();
     }
 
+    private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
+    private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
+
     private void setDefaultCommands() {
         // Set defalut command for drive
+        m_drive.setDefaultCommand(new RunCommand(() -> {
+
+        m_drive.drive(-m_xspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), Constants.kDeadband)) * Constants.kMaxSpeed,
+                      -m_yspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), Constants.kDeadband)) * Constants.kMaxSpeed, 
+                      -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), Constants.kDeadband)) * Constants.kMaxAngularSpeed, 
+                      false);
+        }, m_drive));
+        
     }
+
+    private void driveWithJoystick(boolean fieldRelative) {
+        
+      }
 
 
     private void configureSubsystems() {
