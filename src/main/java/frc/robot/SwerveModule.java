@@ -78,7 +78,16 @@ public class SwerveModule {
    *
    * @param desiredState Desired state with speed and angle.
    */
+
+  private Rotation2d cashedAngle = Rotation2d.fromDegrees(0);
+  
   public void setDesiredState(SwerveModuleState desiredState) {
+    if (desiredState.speedMetersPerSecond == 0) {
+      desiredState.angle = cashedAngle;
+    } else {
+      cashedAngle = desiredState.angle;
+    }
+    //desiredState.angle = desiredState.speedMetersPerSecond == 0 ? cashedAngle : desiredState.angle
     // Optimize the reference state to avoid spinning further than 90 degrees
     // reading encoder through TalonSRX trying getSelectedSensorPosition(0), where 0 is primary closed loop        
     double degrees = (m_turningMotor.getSelectedSensorPosition(0) - m_offset)/ Constants.kTicksPerDegree;

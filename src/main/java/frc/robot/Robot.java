@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    driveWithJoystick(Constants.kTeleFieldCentric);
+    driveWithJoystick(true);
   }
 
   private void driveWithJoystick(boolean fieldRelative) {

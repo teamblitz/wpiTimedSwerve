@@ -3,7 +3,7 @@ package frc.robot;
 public class Constants {
 
     // Field Centric Control
-    public static boolean kAutoFieldCentric = false;
+    public static boolean kAutoFieldCentric = true;
     public static boolean kTeleFieldCentric = false;
 
     // steering module encoder
