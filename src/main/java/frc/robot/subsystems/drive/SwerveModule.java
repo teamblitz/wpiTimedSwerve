@@ -8,7 +8,6 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -23,6 +22,8 @@ public class SwerveModule {
   // private static final int kEncoderResolution = 4096;
   private double m_offset = 0;
   String m_prefsName;
+  
+  String m_dashAbv;
 
   //JWG talon SRX raw encoder position needs to be converted to radians for Rotation2d
   // private static final double kTicksPerDegree = kEncoderResolution / 360;
@@ -39,14 +40,17 @@ public class SwerveModule {
    * @param driveMotorChannel PWM output for the drive motor.
    * @param turningMotorChannel PWM output for the turning motor.
    * @param prefsName  name for preferences to store encoder offset value
+   * @param dashAbv short abbriviation for use in telementry
    */
   // JWG dont have encoder channels, using TalonSRX sensor feedback from analog 5v encoder
   public SwerveModule(
       int driveMotorChannel,
       int turningMotorChannel,
-      String prefsName) {
+      String prefsName,
+      String dashAbv) {
     
     m_prefsName = prefsName;
+    m_dashAbv = dashAbv;
 
     if(driveMotorChannel == Constants.kRearRightDrive)
       m_driveMotor = new WPI_VictorSPX(driveMotorChannel);
@@ -80,15 +84,18 @@ public class SwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
 
-  private Rotation2d cashedAngle = Rotation2d.fromDegrees(0);
+  private Rotation2d cachedAngle = Rotation2d.fromDegrees(0);
   
   public void setDesiredState(SwerveModuleState desiredState) {
-    if (desiredState.speedMetersPerSecond == 0) {
-      desiredState.angle = cashedAngle;
+    
+    // The following code snipet caches the rotation of our swerve modules.
+    // It does this so we do not instantly snap back to the defalut position after we release the joystick
+    // Makes controll a lot easyer
+    if (desiredState.speedMetersPerSecond == 0) { // It only does it if we aren't moving
+      desiredState.angle = cachedAngle; // Use the cached angle, default 0
     } else {
-      cashedAngle = desiredState.angle;
+      cachedAngle = desiredState.angle; // Otherwise cach our current angle
     }
-    //desiredState.angle = desiredState.speedMetersPerSecond == 0 ? cashedAngle : desiredState.angle
     // Optimize the reference state to avoid spinning further than 90 degrees
     // reading encoder through TalonSRX trying getSelectedSensorPosition(0), where 0 is primary closed loop        
     double degrees = (m_turningMotor.getSelectedSensorPosition(0) - m_offset)/ Constants.kTicksPerDegree;
@@ -107,37 +114,8 @@ public class SwerveModule {
 
   }
 
-  public void displayDashboard(AHRS gyro) {
-
-  // OUTPUT
-  // XXX Cleanup
-    SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
-
-    if (m_turningMotor.getDeviceID() == Constants.kFrontLeftTurning) {
-         // Front Left
-         SmartDashboard.putNumber("FL Encoder", m_turningMotor.getSelectedSensorPosition(0));
-         SmartDashboard.putNumber("FL Wheel Offset", m_offset);
-     }
-    else if (m_turningMotor.getDeviceID() == Constants.kFrontRightTurning) {
-        // Front Right
-        SmartDashboard.putNumber("FR Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("FR Wheel Offset", m_offset);
-    
-    }
-    else if (m_turningMotor.getDeviceID() == Constants.kRearLeftTurning) {
-        // Rear Left
-        SmartDashboard.putNumber("RL Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("RL Wheel Offset", m_offset);
-    }
-    else if (m_turningMotor.getDeviceID() == Constants.kRearRightTurning) {
-         // Rear Right
-         SmartDashboard.putNumber("RR Encoder", m_turningMotor.getSelectedSensorPosition(0));
-        SmartDashboard.putNumber("RR Wheel Offset", m_offset);
-     }
-    else
-        System.out.println("Smartdashboard miss on steering motorcontroller");
-
-
+  public void displayDashboard() {
+  SmartDashboard.putNumber(m_dashAbv + " Encoder", m_turningMotor.getSelectedSensorPosition(0));
+  SmartDashboard.putNumber(m_dashAbv + " Wheel Offset", m_offset);
   }
-
 }
