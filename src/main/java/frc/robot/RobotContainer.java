@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.MathUtil;
@@ -17,8 +18,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.SwerveDrivetrain;
+import frc.robot.utils.ButtonBinder;
 
 
 /**
@@ -48,6 +51,8 @@ public class RobotContainer {
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
 
+    private boolean isFieldOriented;
+
     private void setDefaultCommands() {
         // Set defalut command for drive
         m_drive.setDefaultCommand(new RunCommand(() -> {
@@ -55,7 +60,7 @@ public class RobotContainer {
         m_drive.drive(-m_xspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), Constants.kDeadband)) * Constants.kMaxSpeed,
                       -m_yspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), Constants.kDeadband)) * Constants.kMaxSpeed, 
                       -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), Constants.kDeadband)) * Constants.kMaxAngularSpeed, 
-                      false);
+                      isFieldOriented);
         }, m_drive));
         
     }
@@ -75,6 +80,10 @@ public class RobotContainer {
         // Set the wheel offsets when the "user" button on the robo rio is pressed.
         new Trigger(() -> RobotController.getUserButton())
         .whenActive(() -> m_drive.setAllWheelOffsets());
+
+        // Toggle field drive
+        ButtonBinder.bindButton(m_controller, Button.kStart)
+        .toggleWhenActive(new StartEndCommand(() -> isFieldOriented = true, () -> isFieldOriented = false));
 
     }
 
