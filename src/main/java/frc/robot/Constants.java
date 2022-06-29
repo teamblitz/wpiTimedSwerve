@@ -3,8 +3,7 @@ package frc.robot;
 public class Constants {
 
     // Field Centric Control
-    public static boolean kAutoFieldCentric = true;
-    public static boolean kTeleFieldCentric = false;
+    public static boolean kDefaultFieldCentric = true;
 
     // steering module encoder
     public static final int kEncoderResolution = 4096;
@@ -26,10 +25,11 @@ public class Constants {
     // Drive speed input voltage modifier
     public static final double kDriveSpeedVoltageModifier = 4.0;
 
-    // Speed Controls
-    public static final double kMaxSpeed = 1.5; // 3 meters per second
+    // Speed Controls (slow)
+    public static final double kMaxSpeed = 1.5; // 1.5 meters per second
     public static final double kMaxAngularSpeed = 2 * Math.PI; // Control speed of rotation
 
+    // (normal)
     // public static final double kMaxSpeed = 3.0; // 3 meters per second
     // public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
 

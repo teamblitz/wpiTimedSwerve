@@ -8,17 +8,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.SwerveDrivetrain;
 
 
@@ -31,12 +30,18 @@ import frc.robot.subsystems.drive.SwerveDrivetrain;
 public class RobotContainer {
 
     private final XboxController m_controller = new XboxController(0);
+
     private final SwerveDrivetrain m_drive = new SwerveDrivetrain();
 
     public RobotContainer() {
         configureSubsystems();
         configureButtonBindings();
         setDefaultCommands();
+
+        LiveWindow.disableAllTelemetry();
+        
+        SmartDashboard.putData("SetWheelOffsets", new InstantCommand(() -> m_drive.setAllWheelOffsets()));
+        SmartDashboard.putData("Reset Gyro", new InstantCommand(() -> m_drive.resetGyro()));
     }
 
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
@@ -55,10 +60,6 @@ public class RobotContainer {
         
     }
 
-    private void driveWithJoystick(boolean fieldRelative) {
-        
-      }
-
 
     private void configureSubsystems() {
     }
@@ -70,6 +71,10 @@ public class RobotContainer {
     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
     */
     private void configureButtonBindings() {
+        
+        // Set the wheel offsets when the "user" button on the robo rio is pressed.
+        new Trigger(() -> RobotController.getUserButton())
+        .whenActive(() -> m_drive.setAllWheelOffsets());
 
     }
 

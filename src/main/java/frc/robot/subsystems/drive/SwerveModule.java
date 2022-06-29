@@ -57,20 +57,20 @@ public class SwerveModule {
     m_turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
     m_turningMotor.configFeedbackNotContinuous(true, 10);
 
-    LoadWheelOffset();
+    loadWheelOffset();
     // could have brake mode set here
 
     // Limit the PID Controller's input range between -pi and pi and set the input to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
-  public void LoadWheelOffset () {
+  public void loadWheelOffset () {
     m_offset = Preferences.getDouble(m_prefsName, 0);
   }
 
-  public void SetWheelOffset () {
+  public void setWheelOffset () {
     double steerPosition = m_turningMotor.getSelectedSensorPosition(0);
-   Preferences.setDouble(m_prefsName, steerPosition);
+    Preferences.setDouble(m_prefsName, steerPosition);
     m_offset = steerPosition;
   }
 
@@ -110,6 +110,7 @@ public class SwerveModule {
   public void displayDashboard(AHRS gyro) {
 
   // OUTPUT
+  // XXX Cleanup
     SmartDashboard.putNumber("Gyro Yaw", gyro.getYaw());
 
     if (m_turningMotor.getDeviceID() == Constants.kFrontLeftTurning) {

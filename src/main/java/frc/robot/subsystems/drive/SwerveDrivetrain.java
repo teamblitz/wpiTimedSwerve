@@ -62,11 +62,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  public void SetAllWheelOffsets () {
-    m_frontLeft.SetWheelOffset();
-    m_frontRight.SetWheelOffset();
-    m_backLeft.SetWheelOffset();
-    m_backRight.SetWheelOffset();
+  public void setAllWheelOffsets () {
+    m_frontLeft.setWheelOffset();
+    m_frontRight.setWheelOffset();
+    m_backLeft.setWheelOffset();
+    m_backRight.setWheelOffset();
     // System.out.println("SetWheelOffsets Drivetrain");
   }
 
@@ -80,5 +80,4 @@ public class SwerveDrivetrain extends SubsystemBase {
   public void resetGyro () {
     m_gyro.reset();
   }
-
 }
