@@ -6,6 +6,7 @@ package frc.robot.subsystems.drive;
 
 //import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -74,6 +75,10 @@ public class SwerveDrivetrain extends SubsystemBase {
   public void periodic () {
 
     SmartDashboard.putNumber("Gyro Yaw", m_gyro.getYaw());
+    SmartDashboard.putNumber("Gyro Angle", m_gyro.getAngle());
+    SmartDashboard.putNumber("Gyro AngleAdjustment", m_gyro.getAngleAdjustment());
+    SmartDashboard.putNumber("Gyro Compass", m_gyro.getCompassHeading());
+
     m_frontLeft.displayDashboard();
     m_frontRight.displayDashboard();
     m_backLeft.displayDashboard();

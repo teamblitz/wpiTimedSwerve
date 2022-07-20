@@ -35,7 +35,7 @@ public class Constants {
 
 
     //Deadband for crappy joystick
-    public static final double kDeadband = 0.15;
+    public static final double kDeadband = 0.05;
 
     //Tornado spin limiter
     public static final double kSpinLimiter = 0.5;

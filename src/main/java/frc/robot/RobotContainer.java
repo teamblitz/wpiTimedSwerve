@@ -32,7 +32,11 @@ import frc.robot.utils.ButtonBinder;
 */
 public class RobotContainer {
 
-    private final XboxController m_controller = new XboxController(0);
+    private final GenericHID m_controller = new XboxController(0);
+
+    
+
+    //private final GenericHID m_controller = new GenericHID(0);
 
     private final SwerveDrivetrain m_drive = new SwerveDrivetrain();
 
@@ -51,15 +55,15 @@ public class RobotContainer {
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(Constants.kSlewRateLimiter);
 
-    private boolean isFieldOriented;
+    private boolean isFieldOriented = Constants.kDefaultFieldCentric;
 
     private void setDefaultCommands() {
         // Set defalut command for drive
         m_drive.setDefaultCommand(new RunCommand(() -> {
 
-        m_drive.drive(-m_xspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftY(), Constants.kDeadband)) * Constants.kMaxSpeed,
-                      -m_yspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getLeftX(), Constants.kDeadband)) * Constants.kMaxSpeed, 
-                      -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), Constants.kDeadband)) * Constants.kMaxAngularSpeed, 
+        m_drive.drive(-m_xspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getRawAxis(1), Constants.kDeadband)) * Constants.kMaxSpeed,
+                      -m_yspeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getRawAxis(0), Constants.kDeadband)) * Constants.kMaxSpeed, 
+                      -m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRawAxis(5), Constants.kDeadband)) * Constants.kMaxAngularSpeed, 
                       isFieldOriented);
         }, m_drive));
         
@@ -81,9 +85,9 @@ public class RobotContainer {
         new Trigger(() -> RobotController.getUserButton())
         .whenActive(() -> m_drive.setAllWheelOffsets());
 
-        // Toggle field drive
-        ButtonBinder.bindButton(m_controller, Button.kStart)
-        .toggleWhenActive(new StartEndCommand(() -> isFieldOriented = true, () -> isFieldOriented = false));
+        // // Toggle field drive
+        // ButtonBinder.bindButton(m_controller, Button.kStart)
+        // .toggleWhenActive(new StartEndCommand(() -> isFieldOriented = true, () -> isFieldOriented = false));
 
     }
 
