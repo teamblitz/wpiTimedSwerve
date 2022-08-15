@@ -24,10 +24,18 @@ public class Constants {
 
     // Drive speed input voltage modifier
     public static final double kDriveSpeedVoltageModifier = 4.0;
+    //demo
 
     // Speed Controls (slow)
-    public static final double kMaxSpeed = 1.5; // 1.5 meters per second
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // Control speed of rotation
+    public static final double kMaxSpeed = 1; // 1.5 meters per second
+    public static final double kMaxAngularSpeed = Math.PI; // Control speed of rotation
+
+
+
+    //Default
+    // // Speed Controls (slow)
+    // public static final double kMaxSpeed = 1.5; // 1.5 meters per second
+    // public static final double kMaxAngularSpeed = 2 * Math.PI; // Control speed of rotation
 
     // (normal)
     // public static final double kMaxSpeed = 3.0; // 3 meters per second
