@@ -8,15 +8,45 @@ public class SaitekX52Joystick extends GenericHID {
     private final int kY = 1;
     private final int kTwist = 5;
 
-    // public enum Button {
+
+    public enum Axis {
+        kXAxis(0),
+        kYAxis(1),
+        /** Throtle */
+        kZAxis(2),
+        /** Small Dial */
+        kXRot(3),
+        /** Large Dial */
+        kYRot(4),
+        /** Twist */
+        kZRot(5),
+        kSlider(6);
 
 
-    //     public final int value;
 
-    //     Button(int value) {
 
-    //     }
-    // }
+        public final int value;
+
+        Axis(int value) {
+            this.value=value;
+        }
+    }
+
+    public enum Button {
+        kT1(9),
+        kT2(10),
+        kT3(11),
+        kT4(12),
+        kT5(13),
+        kT6(24);
+
+
+        public final int value;
+
+        Button(int value) {
+            this.value=value;
+        }
+    }
 
     public SaitekX52Joystick(int port) {
         super(port);
