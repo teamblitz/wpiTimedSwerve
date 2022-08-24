@@ -70,8 +70,7 @@ public class RobotContainer {
     }
 
 
-    private void configureSubsystems() {
-    }
+    private void configureSubsystems() {}
 
     /**
      * Use this method to define your button->command mappings.  Buttons can be created by
@@ -84,6 +83,9 @@ public class RobotContainer {
         // Set the wheel offsets when the "user" button on the robo rio is pressed.
         new Trigger(() -> RobotController.getUserButton())
         .whenActive(() -> m_drive.setAllWheelOffsets());
+
+
+        RobotController.getUserButton();
 
         // // Toggle field drive
         // ButtonBinder.bindButton(m_controller, Button.kStart)

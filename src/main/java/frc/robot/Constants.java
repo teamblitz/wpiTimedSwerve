@@ -27,7 +27,7 @@ public class Constants {
 
     // Speed Controls (slow)
     public static final double kMaxSpeed = 1.5; // 1.5 meters per second
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // Control speed of rotation
+    public static final double kMaxAngularSpeed = Math.PI; // Control speed of rotation
 
     // (normal)
     // public static final double kMaxSpeed = 3.0; // 3 meters per second

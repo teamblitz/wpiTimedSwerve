@@ -78,6 +78,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Angle", m_gyro.getAngle());
     SmartDashboard.putNumber("Gyro AngleAdjustment", m_gyro.getAngleAdjustment());
     SmartDashboard.putNumber("Gyro Compass", m_gyro.getCompassHeading());
+    SmartDashboard.putBoolean("Disturbance", m_gyro.isMagneticDisturbance());
+    SmartDashboard.putBoolean("Callibrated", m_gyro.isMagnetometerCalibrated());
 
     m_frontLeft.displayDashboard();
     m_frontRight.displayDashboard();
