@@ -2,17 +2,23 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot; 
+package frc.robot.subsystems.drive; 
 
-import frc.robot.Constants;
+//import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 import com.kauailabs.navx.frc.AHRS;
 
 // Represents a swerve drive style drivetrain
-public class SwerveDrivetrain {
+public class SwerveDrivetrain extends SubsystemBase {
   // public static final double kMaxSpeed = 3.0; // 3 meters per second
   // public static final double kMaxAngularSpeed = 4 * Math.PI; // Control speed of rotation
 
@@ -21,10 +27,10 @@ public class SwerveDrivetrain {
   private final Translation2d m_backLeftLocation = new Translation2d(-0.3175, 0.27305);
   private final Translation2d m_backRightLocation = new Translation2d(-0.3175, -0.27305);
 
-  private final SwerveModule m_frontLeft = new SwerveModule(Constants.kFrontLeftDrive, Constants.kFrontLeftTurning, "FrontLeft");  // drive, turning, prefs name
-  private final SwerveModule m_frontRight = new SwerveModule(Constants.kFrontRightDrive, Constants.kFrontRightTurning, "FrontRight");
-  private final SwerveModule m_backLeft = new SwerveModule(Constants.kRearLeftDrive, Constants.kRearLeftTurning, "BackLeft");
-  private final SwerveModule m_backRight = new SwerveModule(Constants.kRearRightDrive, Constants.kRearRightTurning, "BackRight");
+  private final SwerveModule m_frontLeft = new SwerveModule(Constants.kFrontLeftDrive, Constants.kFrontLeftTurning, "FrontLeft", "FL");  // drive, turning, prefs name
+  private final SwerveModule m_frontRight = new SwerveModule(Constants.kFrontRightDrive, Constants.kFrontRightTurning, "FrontRight", "FR");
+  private final SwerveModule m_backLeft = new SwerveModule(Constants.kRearLeftDrive, Constants.kRearLeftTurning, "BackLeft", "BL");
+  private final SwerveModule m_backRight = new SwerveModule(Constants.kRearRightDrive, Constants.kRearRightTurning, "BackRight", "BR");
 
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
@@ -45,37 +51,43 @@ public class SwerveDrivetrain {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  @SuppressWarnings("ParameterName")
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var swerveModuleStates =
+    SwerveModuleState[] swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
             fieldRelative
                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, Constants.kMaxSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  public void SetAllWheelOffsets () {
-    m_frontLeft.SetWheelOffset();
-    m_frontRight.SetWheelOffset();
-    m_backLeft.SetWheelOffset();
-    m_backRight.SetWheelOffset();
+  public void setAllWheelOffsets () {
+    m_frontLeft.setWheelOffset();
+    m_frontRight.setWheelOffset();
+    m_backLeft.setWheelOffset();
+    m_backRight.setWheelOffset();
     // System.out.println("SetWheelOffsets Drivetrain");
   }
+  @Override
+  public void periodic () {
 
-  public void ShowDashboardData () {
-    m_frontLeft.displayDashboard(m_gyro);
-    m_frontRight.displayDashboard(m_gyro);
-    m_backLeft.displayDashboard(m_gyro);
-    m_backRight.displayDashboard(m_gyro);
+    SmartDashboard.putNumber("Gyro Yaw", m_gyro.getYaw());
+    SmartDashboard.putNumber("Gyro Angle", m_gyro.getAngle());
+    SmartDashboard.putNumber("Gyro AngleAdjustment", m_gyro.getAngleAdjustment());
+    SmartDashboard.putNumber("Gyro Compass", m_gyro.getCompassHeading());
+    SmartDashboard.putBoolean("Disturbance", m_gyro.isMagneticDisturbance());
+    SmartDashboard.putBoolean("Callibrated", m_gyro.isMagnetometerCalibrated());
+
+    m_frontLeft.displayDashboard();
+    m_frontRight.displayDashboard();
+    m_backLeft.displayDashboard();
+    m_backRight.displayDashboard();
   }
 
-  public void ResetGyro () {
+  public void resetGyro () {
     m_gyro.reset();
   }
-
 }
